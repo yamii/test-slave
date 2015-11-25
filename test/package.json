@@ -1,0 +1,16 @@
+{
+  "name": "obs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "lodash": "^3.10.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+		"e2e" : "./test-case-1.sh"
+  },
+  "author": "Gideon Rosales <gideonrosales@gmail.com> (https://github.com/gideonairex)",
+  "license": "ISC"
+}
