@@ -60,7 +60,10 @@ function read ( bufferData ) {
 		let infoRaw = command.shift();
 
 		// Clear up delimeter
-		command.pop();
+		var excess = command.pop();
+		if( excess ) {
+			command.push( excess );
+		}
 
 		for( let i = 0; i < command.length; ) {
 			// Check length if the same as readable ascii

@@ -47,7 +47,13 @@ function Master ( options ) {
 				} else if( command === 'FIREHOSE' ) {
 					this[ command ]( socket, commands[ i ] );
 				} else {
-					this[ command ]( socket, commands[ i ] );
+					// There should be reconnect of packet if there is data loss
+					if( this[ command ] ) {
+						this[ command ]( socket, commands[ i ] );
+					} else {
+						debug( 'Corrupted data' );
+						debug( commands[ i ] );
+					}
 				}
 
 			}

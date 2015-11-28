@@ -28,7 +28,6 @@
 
 				} );
 				socket.on( 'data-stream', function ( data ) {
-					console.log( data );
 					var id = data.platform + '-' + data.machine;
 					$( document.getElementsByClassName( id ) ).find( '.stdout' ).append( '<p>' + data.data[ 2 ] + '</p>' );
 				} );
@@ -58,14 +57,16 @@
 					for( var i = 0; i < machines.length; ++i ) {
 						var machine = machines[ i ].platform + '-' + machines[ i ].id;
 						if( i === 0 ) {
-							machineContainer.push( '<div class="col-md-12 show ' + machine + '"><h3>' + machine + '</h3><div class="stdout"></div></div>' );
+							machineContainer.push( '<div class="col-md-12 show ' + machine + '"><h3>' + machine + '</h3><button type="button" class="btn btn-success runner" id="' + machine + '">Run</button><button type="button" class="btn btn-danger cancel" id="' + machine + '-">Clear</button><div class="stdout"></div></div>' );
 						} else {
-							machineContainer.push( '<div class="col-md-12 hidden ' + machine + '"><h3>' + machine + '</h3><div class="stdout"></div></div>' );
+							machineContainer.push( '<div class="col-md-12 hidden ' + machine + '"><h3><h3>' + machine + '</h3><button type="button" class="btn btn-success runner" id="' + machine + '">Run</button><button type="button" class="btn btn-danger cancel" id="' + machine + '-">Clear</button><div class="stdout"></div></div>' );
 						}
 					}
 					$( '.machine-containers' ).html( machineContainer.join( '' ) );
 
 					updateLinks();
+					updateRunners();
+					updateClear();
 				}
 
 				function updateLinks() {
@@ -77,9 +78,25 @@
 						$( '.show' ).addClass( 'hidden' );
 						$( '.show' ).removeClass( 'show' );
 						$( document.getElementsByClassName( id ) ).removeClass( 'hidden' );
-						$( document.getElementsByClassName( id ) ).removeClass( 'show' );
+						$( document.getElementsByClassName( id ) ).addClass( 'show' );
 					} );
 				}
 
+				function updateRunners() {
+					$( '.runner' ).click( function ( e ) {
+						var idArray = e.currentTarget.id.split( '-' );
+						$.get( 'http://localhost:3400/vms/' + idArray[ 0 ] + '/' + idArray[ 1 ], function () {
+							console.log( 'success' );
+						} );
+					} );
+				}
+
+				function updateClear() {
+					$( '.cancel' ).click( function ( e ) {
+						var idArray = e.currentTarget.id.split( '-' );
+						var id = idArray[ 0 ] + '-' + idArray[ 1 ];
+						$( document.getElementsByClassName( id ) ).find( '.stdout' ).html( '' );
+					} );
+				}
 			</script>
 </html>

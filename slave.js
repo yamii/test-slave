@@ -108,28 +108,30 @@ Slave.prototype.write = function () {
 
 Slave.prototype.spawnProcess = function () {
 
-		let metaCurrent   = this.taskQueue.shift();
-		let currentId     = metaCurrent.pop();
-		let commandString = metaCurrent.pop();
-		let command       = JSON.parse( commandString );
+	let metaCurrent   = this.taskQueue.shift();
+	let currentId     = metaCurrent.pop();
+	let commandString = metaCurrent.pop();
+	let command       = JSON.parse( commandString );
 
-		let testProcess = spawn( command.shell, command.arguments );
+	let testProcess = spawn( command.shell, command.arguments );
+	// For windows add new route for windows
+	// let testProcess = spawn( 'cmd.exe', [ '/c', requrie.resolve( './test.bat' ) ] );
 
-		testProcess.stdout.on( 'data', ( stdout ) => {
-			this.write( 'FIREHOSE', currentId, stdout );
-		} );
+	testProcess.stdout.on( 'data', ( stdout ) => {
+		this.write( 'FIREHOSE', currentId, stdout );
+	} );
 
-		testProcess.stderr.on( 'data', ( stderr ) => {
-			this.write( 'FIREHOSE', currentId, stderr );
-		} );
+	testProcess.stderr.on( 'data', ( stderr ) => {
+		this.write( 'FIREHOSE', currentId, stderr );
+	} );
 
-		testProcess.stdout.on( 'end', () => {
-			if( this.taskQueue.length ) {
-				this.spawnProcess();
-			} else{
-				this.busy = false;
-			}
-		} );
+	testProcess.stdout.on( 'end', () => {
+		if( this.taskQueue.length ) {
+			this.spawnProcess();
+		} else{
+			this.busy = false;
+		}
+	} );
 };
 
 Slave.prototype.RUN = function( meta ) {
