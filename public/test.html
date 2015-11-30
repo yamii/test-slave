@@ -1,102 +1,21 @@
 <!doctype html>
     <head>
 			<meta charset="utf-8">
-			<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
-			<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-			<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.5/socket.io.js"></script>
-			<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
-			<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-    </head>
+			<script src="vendors/react.min.js"></script>
+			<script src="vendors/react-dom.min.js"></script>
+			<script src="vendors/browser.min.js"></script>
+			<script src="vendors/jquery.min.js"></script>
+			<script src="vendors/bootstrap.min.js"></script>
+			<script src="vendors/socket.io.min.js"></script>
+			<link rel="stylesheet" href="css/bootstrap.min.css" />
+			<link rel="stylesheet" href="css/font-awesome.min.css" />
+		</head>
 		<body>
 			<div class="container">
 				<h1> Dashboard </h1>
-				<div class="navbar"></div>
-				<div class="machine-containers"></div>
+				<div id="app"></div>
 			</div>
-    </body>
-			<script>
-				var active;
-				var messages;
-				var socket = io( 'ws://localhost:3401' );
+		</body>
 
-				socket.on( 'connect', function(){
-
-					socket.emit( 'update-slaves-list', function ( data ) {
-						console.log( data );
-						updateMachineList( data );
-					} );
-
-				} );
-				socket.on( 'data-stream', function ( data ) {
-					var id = data.platform + '-' + data.machine;
-					$( document.getElementsByClassName( id ) ).find( '.stdout' ).append( '<p>' + data.data[ 2 ] + '</p>' );
-				} );
-				socket.on( 'disconnect', function(){
-					console.log( arguments );
-				} );
-				socket.on( 'update-slaves-list', function ( data ) {
-					console.log( data );
-					updateMachineList( data );
-				} );
-
-				function updateMachineList ( machines ) {
-
-					var navbar = [ '<ul class="nav nav-tabs">' ];
-					for( var i = 0; i < machines.length; ++i ) {
-						var machine = machines[ i ].platform + '-' + machines[ i ].id;
-						if( i === 0 ) {
-							navbar.push( '<li role="presentation" class="active"><a href="#" class="machine-link" id="' + machine + '">' + machine + '</a></li>' );
-						} else {
-							navbar.push( '<li role="presentation"><a href="#" class="machine-link" id="' + machine + '">' + machine + '</a></li>' );
-						}
-					}
-					navbar.push( '</ul>' );
-					$( '.navbar' ).html( navbar.join( '' ) );
-
-					var machineContainer = [];
-					for( var i = 0; i < machines.length; ++i ) {
-						var machine = machines[ i ].platform + '-' + machines[ i ].id;
-						if( i === 0 ) {
-							machineContainer.push( '<div class="col-md-12 show ' + machine + '"><h3>' + machine + '</h3><button type="button" class="btn btn-success runner" id="' + machine + '">Run</button><button type="button" class="btn btn-danger cancel" id="' + machine + '-">Clear</button><div class="stdout"></div></div>' );
-						} else {
-							machineContainer.push( '<div class="col-md-12 hidden ' + machine + '"><h3><h3>' + machine + '</h3><button type="button" class="btn btn-success runner" id="' + machine + '">Run</button><button type="button" class="btn btn-danger cancel" id="' + machine + '-">Clear</button><div class="stdout"></div></div>' );
-						}
-					}
-					$( '.machine-containers' ).html( machineContainer.join( '' ) );
-
-					updateLinks();
-					updateRunners();
-					updateClear();
-				}
-
-				function updateLinks() {
-					$( '.machine-link' ).click( function ( e ) {
-						var id = e.currentTarget.id;
-						e.preventDefault();
-						$( '.active' ).removeClass( 'active' );
-						$( this ).parent().addClass( 'active' );
-						$( '.show' ).addClass( 'hidden' );
-						$( '.show' ).removeClass( 'show' );
-						$( document.getElementsByClassName( id ) ).removeClass( 'hidden' );
-						$( document.getElementsByClassName( id ) ).addClass( 'show' );
-					} );
-				}
-
-				function updateRunners() {
-					$( '.runner' ).click( function ( e ) {
-						var idArray = e.currentTarget.id.split( '-' );
-						$.get( 'http://localhost:3400/vms/' + idArray[ 0 ] + '/' + idArray[ 1 ], function () {
-							console.log( 'success' );
-						} );
-					} );
-				}
-
-				function updateClear() {
-					$( '.cancel' ).click( function ( e ) {
-						var idArray = e.currentTarget.id.split( '-' );
-						var id = idArray[ 0 ] + '-' + idArray[ 1 ];
-						$( document.getElementsByClassName( id ) ).find( '.stdout' ).html( '' );
-					} );
-				}
-			</script>
+		<script type="text/babel" src="scripts/master-slave-app.js"></script>
 </html>
