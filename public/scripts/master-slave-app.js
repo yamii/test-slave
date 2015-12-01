@@ -3,6 +3,9 @@
 var socket = io( 'ws://localhost:3401' );
 
 var SlaveTabs = React.createClass( {
+	'_handleClick' : function ( e ) {
+		this.props.onSwitchTab( e.currentTarget.dataset.index, this.props.slaves[ e.currentTarget.dataset.index ] );
+	},
 
 	'render' : function () {
 		return (
@@ -12,10 +15,12 @@ var SlaveTabs = React.createClass( {
 						this.props.slaves.map( function ( slave, key ) {
 							return (
 								<li key={ key } role="presentation" className={ slave.activeTab ? 'active' : '' }>
-									<a href="#">{ slave.platform }-{ slave.id }</a>
+									<a href="#" data-index={ key } onClick={ this._handleClick }>
+										{ slave.platform }-{ slave.id }
+									</a>
 								</li>
 							);
-						} )
+						}.bind( this ) )
 					}
 				</ul>
 			</div>
@@ -66,15 +71,13 @@ var MasterSlaveApp = React.createClass( {
 
 	'getInitialState' : function () {
 		return {
+			'slaves'      : [ ],
 			'activeSlave' : {
 				'id'        : '',
 				'platform'  : '',
 				'activeTab' : false,
 				'stdout'    : [ ]
-			},
-
-			'slaves'      : [ ],
-			'stdout'      : [ ]
+			}
 		};
 	},
 
@@ -92,15 +95,11 @@ var MasterSlaveApp = React.createClass( {
 	},
 
 	'_streamData' : function ( res ) {
-		var slave = this.state.slaves.filter( function ( slave ) {
-			slave.activeTab = false;
-			return slave.platform === res.platform && slave.id === res.machine;
+		this.state.slaves.filter( function ( slave ) {
+			if ( slave.platform === res.platform && slave.id === res.machine ) {
+				slave.stdout.push( res.data[ 2 ] );
+			}
 		} );
-
-		if ( slave.length ) {
-			slave[ 0 ].activeTab = true;
-			slave[ 0 ].stdout.push( res.data[ 2 ] );
-		}
 
 		this.setState( { 'slaves' : this.state.slaves } );
 	},
@@ -122,10 +121,19 @@ var MasterSlaveApp = React.createClass( {
 		this.setState( { 'slaves' : slaves } );
 	},
 
+	'_setActiveTab' : function ( index, activeSlave ) {
+		this.state.slaves.map( function ( slave, key ) {
+			slave.activeTab = key === parseInt( index, 10 );
+		} );
+
+		this.setState( { 'slaves' : this.state.slaves } );
+		this.setState( { 'activeSlave' : activeSlave } );
+	},
+
 	'render' : function () {
 		return (
 			<div>
-				<SlaveTabs slaves={ this.state.slaves } />
+				<SlaveTabs slaves={ this.state.slaves } onSwitchTab={ this._setActiveTab } />
 				<SlaveContainer slave={ this.state.activeSlave } />
 				<StdoutContainer slave={ this.state.activeSlave } />
 			</div>
