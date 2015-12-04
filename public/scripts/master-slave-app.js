@@ -56,9 +56,24 @@ var StdoutContainer = React.createClass( {
 			<div className="stdout col-xs-12">
 				{
 					this.props.slave.stdout.map( function ( stdout, key ) {
-						return (
-							<p key={ key }>{ stdout }</p>
-						);
+						// identify if stdout contains an accepted HTML tag
+						if ( stdout.indexOf( '\'<a href=' ) > -1 ) {
+							// take out error message prefix - token[ 0 ]
+							var token   = stdout.split( '\'<a href="' );
+							// take redirect url - url[ 0 ]
+							var url     = token[ 1 ].split( '" target="false">' );
+							// take out anchor text - message[ 0 ]
+							var message = url[ 1 ].split( '</a>' );
+							// explicitly create the anchor inside react
+							return (
+								<p key={ key }>{ token[ 0 ] }<a href={ url[ 0 ] } target="false">{ message[ 0 ] }</a></p>
+							);
+						// continue usual render when there are no anchors
+						} else {
+							return (
+								<p key={ key }>{ stdout }</p>
+							);
+						}
 					} )
 				}
 			</div>
