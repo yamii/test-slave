@@ -6,7 +6,7 @@ const net          = require( 'net' );
 const fs           = require( 'fs' );
 const util         = require( 'util' );
 const EventEmitter = require( 'events' );
-const spawn = require( 'child_process' ).spawn;
+const spawn        = require( 'child_process' ).spawn;
 
 // Transform
 const read           = require( './reader' ).read;
@@ -113,9 +113,8 @@ Slave.prototype.spawnProcess = function () {
 	let commandString = metaCurrent.pop();
 	let command       = JSON.parse( commandString );
 
+	command.arguments.push( currentId );
 	let testProcess = spawn( command.shell, command.arguments );
-	// For windows add new route for windows
-	// let testProcess = spawn( 'cmd.exe', [ '/c', requrie.resolve( './test.bat' ) ] );
 
 	testProcess.stdout.on( 'data', ( stdout ) => {
 		this.write( 'FIREHOSE', currentId, stdout );

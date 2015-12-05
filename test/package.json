@@ -6,10 +6,14 @@
   "dependencies": {
     "lodash": "^3.10.1"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "jasmine-spec-reporter": "^2.4.0",
+    "request": "^2.67.0"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-		"e2e" : "./test-case-1.sh"
+    "e2e": "./test-case-1.sh",
+    "protractor": "protractor"
   },
   "author": "Gideon Rosales <gideonrosales@gmail.com> (https://github.com/gideonairex)",
   "license": "ISC"

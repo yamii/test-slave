@@ -8,6 +8,7 @@ var SlaveTabs = React.createClass( {
 	},
 
 	'render' : function () {
+
 		return (
 			<div className="navbar">
 				<ul className="nav nav-tabs">
@@ -31,6 +32,22 @@ var SlaveTabs = React.createClass( {
 
 var SlaveContainer = React.createClass( {
 
+	'getInitialState': function() {
+			return {
+				'data' : [ 's' ]
+			};
+	},
+
+	'componentDidMount' : function () {
+		$.get( 'http://localhost:3400/test-cases', function( result ) {
+			if ( this.isMounted() ) {
+				this.setState( {
+					data : result
+				} );
+			}
+		}.bind( this ) );
+	},
+
 	'_handleClick' : function () {
 		$.get( 'http://localhost:3400/vms/' + this.props.slave.platform + '/' + this.props.slave.id, function () {
 			console.log( 'sucess' );
@@ -42,6 +59,15 @@ var SlaveContainer = React.createClass( {
 			<div className="col-xs-12">
 				<h3>{ this.props.slave.platform }-{ this.props.slave.id }</h3>
 				<button type="button" className="btn btn-primary" onClick={ this._handleClick }>Run</button>
+				<select>
+				{
+					this.state.data.map( function ( file ) {
+						return (
+							<option value={ file.filename }>{ file.filename }</option>
+						);
+					}.bind( this ) )
+				}
+				</select>
 				<button type="button" className="btn btn-danger">Cancel</button>
 			</div>
 		);

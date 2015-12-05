@@ -7,6 +7,7 @@
     "test": "test"
   },
   "dependencies": {
+    "glob": "^6.0.1",
     "hapi": "^11.1.2",
     "inert": "^3.2.0",
     "lodash": "^3.10.1",
