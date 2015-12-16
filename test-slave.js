@@ -7,9 +7,9 @@ const slave = new Slave( {
 } );
 
 slave.on( 'connected', ( slaveClient ) => {
+	console.log( 'Hello Im connectes' );
 } );
 
 slave.on( 'error', ( error ) => {
-
 	console.log( error );
 } );

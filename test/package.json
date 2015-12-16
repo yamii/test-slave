@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
-    "lodash": "^3.10.1"
+    "lodash": "^3.10.1",
+    "socket.io": "^1.3.7"
   },
   "devDependencies": {
     "jasmine-spec-reporter": "^2.4.0",
