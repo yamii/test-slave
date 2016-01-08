@@ -48,8 +48,10 @@ var SlaveContainer = React.createClass( {
 		}.bind( this ) );
 	},
 
-	'_handleClick' : function () {
-		$.get( 'http://localhost:3400/vms/' + this.props.slave.platform + '/' + this.props.slave.id, function () {
+	'_handleClick' : function ( e ) {
+		let select = e.target.parentNode.getElementsByTagName( 'select' )[ 0 ];
+		let selected = select.options[ select.selectedIndex ].value;
+		$.get( 'http://localhost:3400/vms/' + this.props.slave.platform + '/' + this.props.slave.id + '/' + selected, function () {
 			console.log( 'sucess' );
 		} );
 	},
