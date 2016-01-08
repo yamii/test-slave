@@ -63,6 +63,7 @@ exports.config = {
 		};
 	},
 	'onComplete' : function () {
+		spec.metrics.endTime = new Date();
 		request( {
 			'method' : 'POST',
 			'url'    : 'http://localhost:3400/machines/1/test-cases/' + browser.params.templateId,

@@ -170,7 +170,8 @@ module.exports = function ( master ) {
 					'successCount'    : spec.successfulSpecs,
 					'failCount'       : spec.failedSpecs,
 					'success'         : success,
-					'fail'            : fail
+					'fail'            : fail,
+					'endTime'         : spec.endTime
 				};
 
 				let test = new Test( data );
