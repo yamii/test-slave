@@ -56,10 +56,20 @@ var SlaveContainer = React.createClass( {
 		} );
 	},
 
+	'_runAll' : function ( e ) {
+		let select   = e.target.parentNode.getElementsByTagName( 'select' )[ 0 ];
+		for (var i = 0; i < select.length; i++) {
+			$.get( 'http://localhost:3400/vms/' + this.props.slave.platform + '/' + this.props.slave.id + '/' + select.options[i].value, function () {
+				console.log( 'sucess' );
+			} );
+		};
+	},
+
 	'render' : function () {
 		return (
 			<div className="col-xs-12">
 				<h3>{ this.props.slave.platform }-{ this.props.slave.id }</h3>
+				<button type="button" className="btn btn-primary" onClick={ this._runAll }>Run All</button>
 				<button type="button" className="btn btn-primary" onClick={ this._handleClick }>Run</button>
 				<select>
 				{
