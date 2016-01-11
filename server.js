@@ -1,6 +1,7 @@
 'use strict';
 
 const _        = require( 'lodash' );
+const fs       = require( 'fs' );
 const Hapi     = require( 'hapi' );
 const SocketIO = require( 'socket.io' );
 const server   = new Hapi.Server();
@@ -41,7 +42,8 @@ const staticFiles = server.select( 'static' );
 // Rest API
 rest.route( require( './routes' )( master ) );
 
-const io = SocketIO.listen( ws.listener );
+const io      = SocketIO.listen( ws.listener );
+const logPath = process.cwd() + '/testlogs';
 
 function getMachines ( slaves ) {
 	let machines = [];
@@ -58,6 +60,15 @@ function getMachines ( slaves ) {
 
 	return machines;
 }
+
+function createWriteStream( session ) {
+	let writeStream = fs.createWriteStream( logPath + '/' + session + '.log', { 'flags' : 'w' } );
+	writeStream.on( 'error', function ( error ) {
+		// error
+	} );
+	return writeStream;
+}
+
 // FIREHOSE
 master.on( 'data', function ( data ) {
 	_.forEach( io.sockets.connected, ( socket, socketId ) => {
@@ -90,6 +101,10 @@ io.sockets.on( 'connection', ( socket ) => {
 			'os_version'  : browserstack.automation_session.os_version
 		} );
 		socket.browserstackMachineId = machine.id;
+		socket.session               = data.session;
+
+		// create write stream
+		socket.writeStream = createWriteStream( socket.session );
 	} );
 	// Check what happened here
 	socket.on( 'browserstack-stream', ( data ) => {

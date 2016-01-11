@@ -41,7 +41,8 @@ exports.config = {
 						}
 						browser.params.browserStackBody = body;
 						socket.emit( 'register-browserstack', {
-							'browserstack' : body
+							'browserstack' : body,
+							'session'      : session
 						} );
 						// Override console.log
 						var old = console.log;
