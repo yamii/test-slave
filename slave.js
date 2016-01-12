@@ -9,8 +9,9 @@ const EventEmitter = require( 'events' );
 const spawn        = require( 'child_process' ).spawn;
 
 // Transform
-const read           = require( './reader' ).read;
-const transformWrite = require( './reader' ).write;
+const testProtocol   = require( 'test-protocol' );
+const read           = testProtocol.read;
+const transformWrite = testProtocol.write;
 
 function debug () {
 	console.log.apply( null, Array.prototype.slice.call( arguments ) );

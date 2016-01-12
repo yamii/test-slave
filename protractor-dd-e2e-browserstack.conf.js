@@ -1,11 +1,11 @@
 'use strict';
 
-var config       = require( './config' );
-var request      = require( 'request' );
-var SpecReporter = require( 'jasmine-spec-reporter' );
-var spec         = new SpecReporter( { 'displayStacktrace' : true } );
-var _            = require( 'lodash' );
-var io           = require( 'socket.io-client' );
+var protractorConfig = require( 'protractor-config' );
+var request          = require( 'request' );
+var SpecReporter     = require( 'jasmine-spec-reporter' );
+var spec             = new SpecReporter( { 'displayStacktrace' : true } );
+var _                = require( 'lodash' );
+var io               = require( 'socket.io-client' );
 
 let env = process.env;
 
@@ -14,7 +14,7 @@ exports.config = {
 	'framework'       : 'jasmine2',
 	'seleniumAddress' : 'http://hub.browserstack.com/wd/hub',
 	'baseUrl'         : 'https://dev.observe.edivate.com',
-	'multiCapabilities' : config.multiCapabilities,
+	'multiCapabilities' : protractorConfig.multiCapabilities,
 	'jasmineNodeOpts' : {
 		'showColors'             : true, // Use colors in the command line report.
 		'isVerbose'              : true,
