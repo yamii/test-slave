@@ -4,14 +4,18 @@
 const encoding = 'ascii';
 
 // Constact Delimeters
-const start = '~';
-const line  = '#';
-const end   = '\r\n';
+const start        = '~';
+const line         = '#';
+const end          = '\r\n';
+const messageEnder = '$';
 
 // Buffed delimeters
-const bufStart = new Buffer( start, encoding );
-const bufLine  = new Buffer( line, encoding );
-const bufEnd   = new Buffer( end, encoding );
+const bufStart        = new Buffer( start, encoding );
+const bufLine         = new Buffer( line, encoding );
+const bufEnd          = new Buffer( end, encoding );
+const bufMessageEnder = new Buffer( messageEnder, encoding );
+
+let remainingBuffers;
 
 function write () {
 
@@ -38,8 +42,24 @@ function write () {
 		size += 5 + buflen.length + arg.length;
 	}
 
+	// Add ender
+	parts = parts.concat( [
+		bufMessageEnder
+	] );
+
+	size += 1;
+
 	return Buffer.concat( parts, size );
 
+}
+
+function getCommand( data ) {
+	let command = [];
+	for( let i = 1; i < data.length; ) {
+		command.push( data[ i ] );
+		i = i + 2;
+	}
+	return command;
 }
 
 function read ( bufferData ) {
@@ -48,32 +68,34 @@ function read ( bufferData ) {
 	let readable      = bufferData.toString( 'utf-8' );
 	let readableArray = readable.split( start );
 
-	// Clean up excess delimeter from concat
-	readableArray.shift();
-
 	for( let k = 0; k < readableArray.length; ++k ) {
+		let readableCommand = readableArray[ k ];
 
-		let readData      = [];
-		let command = readableArray[ k ].split( end );
+		// This is for removing the '' on splittin ~
+		if( readableCommand.length ) {
 
-		// Info of request
-		let infoRaw = command.shift();
+			if( readableCommand[ readableCommand.length - 1 ] === messageEnder ) {
 
-		// Clear up delimeter
-		var excess = command.pop();
-		if( excess ) {
-			command.push( excess );
+				// Check if there are buffers
+				if( remainingBuffers ) {
+					readableCommand = remainingBuffers + readableCommand;
+				}
+
+				let readCommandArray = readableCommand.split( end );
+				// Remove message ender
+				readCommandArray.pop();
+				let length = readCommandArray.shift();
+				let command = getCommand( readCommandArray );
+				read.push( command );
+
+				// Clear remainingBuffers
+				readableCommand = '';
+			} else  {
+				remainingBuffers += readableCommand;
+			}
+
 		}
 
-		for( let i = 0; i < command.length; ) {
-			// Check length if the same as readable ascii
-			// let length  = readableArray[ i ].substring( 1 );
-			let argData = command[ i + 1 ];
-			readData.push( argData );
-			i = i + 2;
-		}
-
-		read.push( readData );
 	}
 
 	return read;
