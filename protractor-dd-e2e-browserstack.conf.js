@@ -7,13 +7,15 @@ var spec             = new SpecReporter( { 'displayStacktrace' : true } );
 var _                = require( 'lodash' );
 var io               = require( 'socket.io-client' );
 
-let env = process.env;
+let env      = process.env;
+const config = require( './config' );
 
+console.log( config.seleniumAddress );
 exports.config = {
 	// Framework needed
 	'framework'       : 'jasmine2',
-	'seleniumAddress' : 'http://hub.browserstack.com/wd/hub',
-	'baseUrl'         : 'https://dev.observe.edivate.com',
+	'seleniumAddress' : config.seleniumAddress,
+	'baseUrl'         : config.baseUrl,
 	'multiCapabilities' : protractorConfig.multiCapabilities,
 	'jasmineNodeOpts' : {
 		'showColors'             : true, // Use colors in the command line report.
@@ -22,9 +24,9 @@ exports.config = {
 		'print'                  : function () {}
 	},
 	'allScriptsTimeout' : 120000,
-	'specs'             : [ '../observation-public/test/single-pass/index.spec.js' ],
+	'specs'             : config.specs,
 	'onPrepare'         : function () {
-		var socket = io( 'ws://localhost:3401' );
+		var socket = io( config.socketServer );
 		socket.on( 'connect', function () {
 			// Register machine
 			browser
@@ -67,7 +69,7 @@ exports.config = {
 		spec.metrics.endTime = new Date();
 		request( {
 			'method' : 'POST',
-			'url'    : 'http://localhost:3400/machines/1/test-cases/' + browser.params.templateId,
+			'url'    : config.apiServer + '/machines/1/test-cases/' + browser.params.templateId,
 			'body'   : {
 				'browserstack' : browser.params.browserStackBody,
 				'spec'         : spec.metrics

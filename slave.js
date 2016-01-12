@@ -13,6 +13,8 @@ const testProtocol   = require( 'test-protocol' );
 const read           = testProtocol.read;
 const transformWrite = testProtocol.write;
 
+const config = require( './config' );
+
 function debug () {
 	console.log.apply( null, Array.prototype.slice.call( arguments ) );
 }
@@ -33,7 +35,7 @@ function Slave( options ) {
 	this.busy      = false;
 
 	this.defaultOptions = {
-		'port' : 7777
+		'port' : config.port
 	};
 
 	this.options    = options || this.defaultOptions;
