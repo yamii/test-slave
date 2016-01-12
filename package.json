@@ -1,5 +1,5 @@
 {
-  "name": "master-slave",
+  "name": "test-runner",
   "version": "1.0.0",
   "description": "",
   "main": "master.js",
@@ -7,9 +7,6 @@
     "test": "test"
   },
   "dependencies": {
-    "glob": "^6.0.1",
-    "hapi": "^11.1.2",
-    "inert": "^3.2.0",
     "jasmine-spec-reporter": "^2.4.0",
     "lodash": "^3.10.1",
     "mongoose": "^4.3.1",
@@ -21,7 +18,7 @@
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js",
+    "start": "node index",
     "protractor": "protractor"
   },
   "author": "Gideon Rosales <gideonrosales@gmail.com> (https://github.com/gideonairex)",
