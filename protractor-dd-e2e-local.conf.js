@@ -18,7 +18,7 @@ exports.config = {
 	'seleniumAddress' : config.seleniumAddress,
 	'baseUrl'         : config.baseUrl,
 	'capabilities'    : {
-		'bowserName' : 'chrome'
+		'browserName' : 'chrome'
 	},
 	'jasmineNodeOpts' : {
 		'showColors'             : true, // Use colors in the command line report.
