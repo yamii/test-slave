@@ -119,12 +119,11 @@ Slave.prototype.spawnProcess = function () {
 
 	command.arguments.push( currentId );
 	if ( os.platform() === 'win32' ) {
-
- 		let cmd     = [ '/c', command.shell ];
+ 		let cmd     = [ '/c', command.shell + '.bat' ];
 		cmd         = cmd.concat( command.arguments );
 		testProcess = spawn( process.env.comspec, cmd )
 	} else {
-		testProcess = spawn( './' + command.shell, command.arguments );
+		testProcess = spawn( './' + command.shell + '.sh', command.arguments );
 	}
 
 	testProcess.stdout.on( 'data', ( stdout ) => {
