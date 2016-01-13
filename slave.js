@@ -115,9 +115,17 @@ Slave.prototype.spawnProcess = function () {
 	let currentId     = metaCurrent.pop();
 	let commandString = metaCurrent.pop();
 	let command       = JSON.parse( commandString );
+	let testProcess;
 
 	command.arguments.push( currentId );
-	let testProcess = spawn( command.shell, command.arguments );
+	if ( os.platform() === 'win32' ) {
+
+ 		let cmd     = [ '/c', command.shell ];
+		cmd         = cmd.concat( command.arguments );
+		testProcess = spawn( process.env.comspec, cmd )
+	} else {
+		testProcess = spawn( './' + command.shell, command.arguments );
+	}
 
 	testProcess.stdout.on( 'data', ( stdout ) => {
 		this.write( 'FIREHOSE', currentId, stdout );
