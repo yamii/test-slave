@@ -1,13 +1,15 @@
 'use strict';
 
-const Slave = require( './slave' );
+const Slave  = require( './slave' );
+const config = require( './config' );
 
 const slave = new Slave( {
-	'port' : 7777
+	'host' : config.host,
+	'port' : config.port
 } );
 
 slave.on( 'connected', ( slaveClient ) => {
-	console.log( 'Hello Im connected' );
+	console.log( 'Im connected to the server' );
 } );
 
 slave.on( 'error', ( error ) => {

@@ -10,7 +10,6 @@ var io               = require( 'socket.io-client' );
 let env      = process.env;
 const config = require( './config' );
 
-console.log( config.seleniumAddress );
 exports.config = {
 	// Framework needed
 	'framework'       : 'jasmine2',
@@ -76,7 +75,7 @@ exports.config = {
 			},
 			'json' : true
 		}, function () {
-			//console.log( 'Good' );
+			console.log( 'Good' );
 		} );
 	}
 

@@ -11,11 +11,12 @@
     "lodash": "^3.10.1",
     "mongoose": "^4.3.1",
     "protractor": "^3.0.0",
+    "protractor-config": "git+https://github.com/yamii/protractor-config",
     "request": "^2.67.0",
     "socket.io": "^1.3.7",
-    "uuid": "^2.0.1",
-   "test-protocol": "git+https://github.com/yamii/test-protocol",
-   "protractor-config": "git+https://github.com/yamii/protractor-config"
+    "socket.io-client": "^1.4.4",
+    "test-protocol": "git+https://github.com/yamii/test-protocol",
+    "uuid": "^2.0.1"
   },
   "devDependencies": {},
   "scripts": {
