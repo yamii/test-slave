@@ -59,6 +59,11 @@ exports.config = {
 						};
 						resolve();
 					} );
+
+					socket.on( 'error', function ( error ) {
+						console.log( error );
+					} );
+
 				}
 			} )
 		} );
