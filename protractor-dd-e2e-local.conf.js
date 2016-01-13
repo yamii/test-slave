@@ -31,7 +31,7 @@ exports.config = {
 	'onPrepare'         : function () {
 		jasmine.getEnv().addReporter( spec );
 		return new Promise( function ( resolve, reject ) {
-			request( config.apiServer + '/test-cases/{bowser.param.templateId}', function ( error, response, body ) {
+			request( config.apiServer + '/test-cases/' + browser.params.templateId, function ( error, response, body ) {
 				if ( !error && response.statusCode == 200 ) {
 					browser.params.template = body;
 					var socket = io( config.socketServer );
