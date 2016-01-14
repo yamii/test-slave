@@ -32,7 +32,11 @@ function Slave( options ) {
 	// This queue is to regulate processes on spawn
 	this.taskQueue = [];
 
-	this.busy      = false;
+	this.busy         = false;
+	this.retry        = 0;
+	this.retry_max    = 10;
+	this.retry_delay  = 2000;
+	this.reconnecting = false;
 
 	this.defaultOptions = {
 		'port' : config.port
@@ -42,7 +46,6 @@ function Slave( options ) {
 	this.options.os = os.platform();
 
 	this.client = net.connect( options );
-
 	this.setListeners();
 
 	return this;
@@ -68,14 +71,16 @@ Slave.prototype.setListeners = function () {
 	} );
 
 	this.client.on( 'error', ( error ) => {
-
 		this.emit( 'error', error );
 	} );
 
 	this.client.on( 'connect', () => {
+		// Reset retry counter
+		this.retry = 0;
 
 		let slaveMeta = {
-			'platform' : this.options.os
+			'platform' : this.options.os,
+			'id'       : this.id
 		}
 		// Introduce self
 		this.write( 'IAM', JSON.stringify( slaveMeta ), ( error, data ) => {
@@ -84,6 +89,24 @@ Slave.prototype.setListeners = function () {
 
 	} );
 
+	this.client.on( 'close', ( reason ) => {
+		console.log( reason );
+		this.reconnect();
+	} );
+
+};
+
+Slave.prototype.reconnect = function () {
+	if( this.retry < this.retry_max ) {
+		console.log( 'Reconnecting...' );
+		setTimeout( () => {
+			this.client = net.connect( this.options );
+			this.setListeners();
+		}, this.retry_delay );
+		++this.retry;
+	} else {
+		console.log( 'Slave has given up...' );
+	}
 };
 
 Slave.prototype.write = function () {
