@@ -75,7 +75,8 @@ exports.config = {
 			'url'    : config.apiServer + '/machines/1/test-cases/' + browser.params.templateId,
 			'body'   : {
 				'browserstack' : browser.params.browserStackBody,
-				'spec'         : spec.metrics
+				'spec'         : spec.metrics,
+				'env'          : browser.params.envObj
 			},
 			'json' : true
 		}, function () {
