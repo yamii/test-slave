@@ -12,6 +12,7 @@ let Promise          = require( 'bluebird' );
 let socket;
 let env      = process.env;
 const config = require( './config' );
+let os       = require( 'os' );
 
 exports.config = {
 	// Framework needed
@@ -38,11 +39,23 @@ exports.config = {
 					browser.params.template = body;
 					socket = io( config.socketServer );
 					socket.on( 'connect', function () {
+						// temporary fix
+						let osPlatform = {
+							browser    : 'chrome',
+							os         : 'OS X',
+							os_version : 'Yosemite'
+						};
+						if ( os.platform() === 'win32' ) {
+							osPlatform.browser    = 'chrome',
+							osPlatform.os         = 'Windows';
+							osPlatform.os_version = '8';
+						}
+
 						browser.params.browserStackBody = {
 							'automation_session' : {
-								'browser'            : 'chrome',
-								'os'                 : 'OS X',
-								'os_version'         : 'Yosemite',
+								'browser'            : osPlatform.browser,
+								'os'                 : osPlatform.os,
+								'os_version'         : osPlatform.os_version,
 								'session'            : browser.params.session
 							}
 						};
