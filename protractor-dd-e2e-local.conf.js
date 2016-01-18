@@ -1,14 +1,15 @@
 'use strict';
 
-var protractorConfig = require( 'protractor-config' );
-var request          = require( 'request' );
-var SpecReporter     = require( 'jasmine-spec-reporter' );
-var spec             = new SpecReporter( { 'displayStacktrace' : true } );
-var _                = require( 'lodash' );
-var io               = require( 'socket.io-client' );
-var uuid             = require( 'uuid');
-var Promise          = require( 'bluebird' );
+let protractorConfig = require( 'protractor-config' );
+let request          = require( 'request' );
+let SpecReporter     = require( 'jasmine-spec-reporter' );
+let spec             = new SpecReporter( { 'displayStacktrace' : true } );
+let _                = require( 'lodash' );
+let io               = require( 'socket.io-client' );
+let uuid             = require( 'uuid');
+let Promise          = require( 'bluebird' );
 
+let socket;
 let env      = process.env;
 const config = require( './config' );
 
@@ -34,7 +35,7 @@ exports.config = {
 			request( config.apiServer + '/test-cases/' + browser.params.templateId, function ( error, response, body ) {
 				if ( !error && response.statusCode == 200 ) {
 					browser.params.template = body;
-					var socket = io( config.socketServer );
+					socket = io( config.socketServer );
 					socket.on( 'connect', function () {
 						browser.params.browserStackBody = {
 							'automation_session' : {
@@ -48,7 +49,7 @@ exports.config = {
 							'session'      : uuid.v4()
 						} );
 						// Override console.log
-						var old = console.log;
+						let old = console.log;
 						console.log = function () {
 							//Array.prototype.unshift.call(arguments, 'Report: ');
 							// Keep this for debugging purposes
@@ -63,7 +64,6 @@ exports.config = {
 					socket.on( 'error', function ( error ) {
 						console.log( error );
 					} );
-
 				}
 			} )
 		} );
@@ -80,6 +80,7 @@ exports.config = {
 			},
 			'json' : true
 		}, function () {
+			socket.emit( 'end-socket' );
 			//console.log( 'Good' );
 		} );
 	}
