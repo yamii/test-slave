@@ -34,6 +34,7 @@ exports.config = {
 		return new Promise( function ( resolve, reject ) {
 			request( config.apiServer + '/test-cases/' + browser.params.templateId, function ( error, response, body ) {
 				if ( !error && response.statusCode == 200 ) {
+					browser.params.session = uuid.v4();
 					browser.params.template = body;
 					socket = io( config.socketServer );
 					socket.on( 'connect', function () {
@@ -41,12 +42,13 @@ exports.config = {
 							'automation_session' : {
 								'browser'            : 'chrome',
 								'os'                 : 'OS X',
-								'os_version'         : 'Yosemite'
+								'os_version'         : 'Yosemite',
+								'session'            : browser.params.session
 							}
 						};
 						socket.emit( 'register-browserstack', {
 							'browserstack' : browser.params.browserStackBody,
-							'session'      : uuid.v4()
+							'session'      : browser.params.session
 						} );
 						// Override console.log
 						let old = console.log;
