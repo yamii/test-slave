@@ -14,6 +14,7 @@ const read           = testProtocol.read;
 const transformWrite = testProtocol.write;
 
 const config = require( './config' );
+const specs  = require( './config/specs.json' );
 
 function debug () {
 	console.log.apply( null, Array.prototype.slice.call( arguments ) );
@@ -42,10 +43,13 @@ function Slave( options ) {
 		'port' : config.port
 	};
 
-	this.options    = options || this.defaultOptions;
-	this.options.os = os.platform();
+	this.options                = options || this.defaultOptions;
+	this.options.os             = specs.os;
+	this.options.name           = specs.name || 'slave';
+	this.options.browser        = specs.browser;
+	this.options.osVersion      = specs.os_version;
+	this.options.browserVersion = specs.browser_version;
 
-	this.name   = options.name || 'slave';
 	this.client = net.connect( options );
 	this.setListeners();
 
@@ -80,13 +84,16 @@ Slave.prototype.setListeners = function () {
 		this.retry = 0;
 
 		let slaveMeta = {
-			'platform' : this.options.os,
-			'id'       : this.id,
-			'name'     : this.name
+			'platform'       : this.options.os,
+			'id'             : this.id,
+			'name'           : this.options.name,
+			'browser'        : this.options.browser,
+			'osVersion'      : this.options.osVersion,
+			'browserVersion' : this.options.browserVersion
 		}
 		// Introduce self
 		this.write( 'IAM', JSON.stringify( slaveMeta ), ( error, data ) => {
-			console.log( 'IAM ', this.name );
+			console.log( 'IAM ', this.options.name );
 			this.emit( 'connected', this );
 		} );
 

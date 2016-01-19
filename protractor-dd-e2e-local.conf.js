@@ -14,6 +14,8 @@ let env      = process.env;
 const config = require( './config' );
 let os       = require( 'os' );
 
+const specs =  require( './config/specs.json' );
+
 exports.config = {
 	// Framework needed
 	'framework'       : 'jasmine2',
@@ -41,24 +43,25 @@ exports.config = {
 					socket.on( 'connect', function () {
 						// temporary fix
 						let osPlatform = {
-							browser    : 'chrome',
 							os         : 'OS X',
 							os_version : 'Yosemite'
 						};
 						if ( os.platform() === 'win32' ) {
-							osPlatform.browser    = 'chrome',
 							osPlatform.os         = 'Windows';
 							osPlatform.os_version = '8';
 						}
 
 						browser.params.browserStackBody = {
 							'automation_session' : {
-								'browser'            : osPlatform.browser,
+								'browser'            : specs.browser,
+								'browserVersion'     : specs.browserVersion,
 								'os'                 : osPlatform.os,
 								'os_version'         : osPlatform.os_version,
-								'session'            : browser.params.session
+								'session'            : browser.params.session,
+								'name'               : specs.name
 							}
 						};
+
 						socket.emit( 'register-browserstack', {
 							'browserstack' : browser.params.browserStackBody,
 							'session'      : browser.params.session

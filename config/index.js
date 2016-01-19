@@ -9,5 +9,5 @@ module.exports = {
 	'baseUrl'         : process.env.BASE_URL || 'https://dev.observe.edivate.com',
 	'socketServer'    : 'ws://' + remoteHost + ':3401',
 	'apiServer'       : 'http://' + remoteHost + ':3400',
-	'specs'           : [ '../observation-public/test/single-pass/index.spec.js' ]
+	'specs'           : [ 'test/test/test-1.spec.js' ]
 };
