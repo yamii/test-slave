@@ -86,7 +86,7 @@ Slave.prototype.setListeners = function () {
 		}
 		// Introduce self
 		this.write( 'IAM', JSON.stringify( slaveMeta ), ( error, data ) => {
-			console.log( 'IAM ', this.name, '-', this.id );
+			console.log( 'IAM ', this.name );
 			this.emit( 'connected', this );
 		} );
 

@@ -3,6 +3,7 @@
 const Slave  = require( './slave' );
 const config = require( './config' );
 const random = require( 'node-random-name' );
+const uuid   = require( 'uuid' );
 
 // read config name file
 const fs       = require( 'fs' );
@@ -12,6 +13,7 @@ let slaveName  = 'slave';
 
 if ( specs.name === 'slave' ) {
 	specs.name =  slaveName = random().replace( ' ', '-' ).toLowerCase();
+	specs.name += '-' + uuid.v4();
 	// write updates
 	fs.writeFile( namePath, JSON.stringify( specs ), ( error ) => {
 		if ( error ) console.log( error );
@@ -21,7 +23,7 @@ if ( specs.name === 'slave' ) {
 const slave = new Slave( {
 	'host' : config.host,
 	'port' : config.port,
-	'name' : slaveName
+	'name' : specs.name
 } );
 
 slave.on( 'connected', ( slaveClient ) => {
