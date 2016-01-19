@@ -2,10 +2,12 @@
 
 const Slave  = require( './slave' );
 const config = require( './config' );
+const random = require( 'node-random-name' );
 
 const slave = new Slave( {
 	'host' : config.host,
-	'port' : config.port
+	'port' : config.port,
+	'name' : random().replace( ' ', '-' ).toLowerCase()
 } );
 
 slave.on( 'connected', ( slaveClient ) => {
