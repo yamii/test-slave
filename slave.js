@@ -14,6 +14,7 @@ const read           = testProtocol.read;
 const transformWrite = testProtocol.write;
 
 const config = require( './config' );
+const random = require( 'node-random-name' );
 
 function debug () {
 	console.log.apply( null, Array.prototype.slice.call( arguments ) );
@@ -78,12 +79,15 @@ Slave.prototype.setListeners = function () {
 		// Reset retry counter
 		this.retry = 0;
 
+		let slaveName = random().replace( ' ', '_' ).toLowerCase();
 		let slaveMeta = {
 			'platform' : this.options.os,
-			'id'       : this.id
+			'id'       : this.id,
+			'name'     : slaveName
 		}
 		// Introduce self
 		this.write( 'IAM', JSON.stringify( slaveMeta ), ( error, data ) => {
+			console.log( 'IAM ', slaveName, '-', this.id );
 			this.emit( 'connected', this );
 		} );
 
