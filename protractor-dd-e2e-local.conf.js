@@ -33,6 +33,7 @@ exports.config = {
 	'allScriptsTimeout' : 120000,
 	'specs'             : config.specs,
 	'onPrepare'         : function () {
+		browser.manage().window().setSize( 1792, 1008 );
 		jasmine.getEnv().addReporter( spec );
 		return new Promise( function ( resolve, reject ) {
 			request( config.apiServer + '/test-cases/' + browser.params.templateId, function ( error, response, body ) {
