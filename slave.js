@@ -106,7 +106,7 @@ Slave.prototype.setListeners = function () {
 };
 
 Slave.prototype.sendCloseSignal = function () {
-	this.client.write( transformWrite( [ 'CLOSE' ] ) );
+	this.client.write( this.testProtocol.write( [ 'CLOSE' ] ) );
 };
 
 Slave.prototype.reconnect = function () {
