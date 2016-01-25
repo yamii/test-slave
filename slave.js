@@ -9,7 +9,7 @@ const EventEmitter = require( 'events' );
 const spawn        = require( 'child_process' ).spawn;
 
 // Transform
-const TestProtocol   = require( 'test-protocol' );
+let TestProtocol = require( 'test-protocol' );
 
 const config = require( './config' );
 const specs  = require( './config/specs.json' );
@@ -24,7 +24,7 @@ function Slave( options ) {
 
 	// Identify self
 	this.id = uuid.v4();
-	this.testProtocol = new TestProtocol;
+	this.testProtocol = new TestProtocol();
 
 	// Queue for callback
 	this.queue     = [];
