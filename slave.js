@@ -105,6 +105,10 @@ Slave.prototype.setListeners = function () {
 
 };
 
+Slave.prototype.sendCloseSignal = function () {
+	this.client.write( transformWrite( [ 'CLOSE' ] ) );
+};
+
 Slave.prototype.reconnect = function () {
 	if( this.retry < this.retry_max ) {
 		console.log( 'Reconnecting...' );

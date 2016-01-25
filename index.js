@@ -39,3 +39,9 @@ slave.on( 'connected', ( slaveClient ) => {
 slave.on( 'error', ( error ) => {
 	console.log( error );
 } );
+
+// listen for termination or Control-C event
+process.on( 'SIGINT', () => {
+	slave.sendCloseSignal();
+	process.exit( 1 );
+} );
