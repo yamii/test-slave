@@ -9,9 +9,7 @@ const EventEmitter = require( 'events' );
 const spawn        = require( 'child_process' ).spawn;
 
 // Transform
-const testProtocol   = require( 'test-protocol' );
-const read           = testProtocol.read;
-const transformWrite = testProtocol.write;
+const TestProtocol   = require( 'test-protocol' );
 
 const config = require( './config' );
 const specs  = require( './config/specs.json' );
@@ -26,6 +24,7 @@ function Slave( options ) {
 
 	// Identify self
 	this.id = uuid.v4();
+	this.testProtocol = new TestProtocol;
 
 	// Queue for callback
 	this.queue     = [];
@@ -62,7 +61,7 @@ Slave.prototype.setListeners = function () {
 
 	this.client.on( 'data', ( data ) => {
 
-		let readable = read( data );
+		let readable = this.testProtocol.read( data );
 		for( let k = 0; k < readable.length; ++k ) {
 
 			let command = readable[ k ][ 0 ];
@@ -133,7 +132,7 @@ Slave.prototype.write = function () {
 		this.queue.push( cb );
 	}
 
-	this.client.write( transformWrite.apply( null, args ) );
+	this.client.write( this.testProtocol.write.apply( null, args ) );
 };
 
 // Temporary for now
