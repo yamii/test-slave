@@ -34,7 +34,7 @@ function Slave( options ) {
 
 	this.busy         = false;
 	this.retry        = 0;
-	this.retry_max    = 10;
+	this.retry_max    = config.retryCount;
 	this.retry_delay  = 2000;
 	this.reconnecting = false;
 

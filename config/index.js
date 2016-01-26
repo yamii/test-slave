@@ -9,5 +9,6 @@ module.exports = {
 	'baseUrl'         : process.env.BASE_URL,
 	'socketServer'    : 'ws://' + remoteHost + ':3401',
 	'apiServer'       : 'http://' + remoteHost + ':3400',
-	'specs'           : [ '../observation-public/test/single-pass/index.spec.js' ]
+	'specs'           : [ '../observation-public/test/single-pass/index.spec.js' ],
+	'retryCount'      : process.env.RETRY_COUNT || 1800
 };
