@@ -23,9 +23,11 @@ if ( specs.name === 'slave' ) {
 	// write updates
 }
 
-fs.writeFile( namePath, JSON.stringify( specs ), ( error ) => {
-	if ( error ) console.log( error );
-} );
+if ( JSON.stringify( specs ) ) {
+	fs.writeFile( namePath, JSON.stringify( specs ), ( error ) => {
+		if ( error ) console.log( error );
+	} );
+}
 
 const slave = new Slave( {
 	'host' : config.host,
