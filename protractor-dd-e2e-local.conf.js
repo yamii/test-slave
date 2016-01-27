@@ -99,7 +99,7 @@ exports.config = {
 			},
 			'json' : true
 		}, function () {
-			socket.emit( 'end-socket' );
+			socket.emit( 'end-socket', { 'testCase' : browser.params.templateId } );
 			//console.log( 'Good' );
 		} );
 	}
