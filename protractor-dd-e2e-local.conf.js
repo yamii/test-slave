@@ -14,7 +14,8 @@ let env      = process.env;
 const config = require( './config' );
 let os       = require( 'os' );
 
-const specs =  require( './config/specs.json' );
+let disconnected = false;
+const specs      = require( './config/specs.json' );
 
 exports.config = {
 	// Framework needed
@@ -36,39 +37,44 @@ exports.config = {
 		browser.manage().window().setSize( 1792, 1008 );
 		jasmine.getEnv().addReporter( spec );
 		return new Promise( function ( resolve, reject ) {
+
+			// Override console.log
+			let old = console.log;
+
 			request( config.apiServer + '/test-cases/' + browser.params.templateId, function ( error, response, body ) {
 				if ( !error && response.statusCode == 200 ) {
-					browser.params.session = uuid.v4();
-					browser.params.template = body;
-					socket = io( config.socketServer );
-					socket.on( 'connect', function () {
-						// temporary fix
-						let osPlatform = {
-							os         : 'OS X',
-							os_version : 'Yosemite'
-						};
-						if ( os.platform() === 'win32' ) {
-							osPlatform.os         = 'Windows';
-							osPlatform.os_version = '8';
-						}
 
-						browser.params.browserStackBody = {
-							'automation_session' : {
-								'browser'            : specs.browser,
-								'browserVersion'     : specs.browserVersion,
-								'os'                 : osPlatform.os,
-								'os_version'         : osPlatform.os_version,
-								'session'            : browser.params.session,
-								'name'               : specs.name
-							}
-						};
+					browser.params.session  = uuid.v4();
+					browser.params.template = body;
+					socket                  = io( config.socketServer );
+
+					// temporary fix
+					let osPlatform = {
+						os         : 'OS X',
+						os_version : 'Yosemite'
+					};
+					if ( os.platform() === 'win32' ) {
+						osPlatform.os         = 'Windows';
+						osPlatform.os_version = '8';
+					}
+
+					browser.params.browserStackBody = {
+						'automation_session' : {
+							'browser'            : specs.browser,
+							'browserVersion'     : specs.browserVersion,
+							'os'                 : osPlatform.os,
+							'os_version'         : osPlatform.os_version,
+							'session'            : browser.params.session,
+							'name'               : specs.name
+						}
+					};
+
+					socket.on( 'connect', function () {
 
 						socket.emit( 'register-browserstack', {
 							'browserstack' : browser.params.browserStackBody,
 							'session'      : browser.params.session
 						} );
-						// Override console.log
-						let old = console.log;
 						console.log = function () {
 							//Array.prototype.unshift.call(arguments, 'Report: ');
 							// Keep this for debugging purposes
@@ -82,29 +88,41 @@ exports.config = {
 
 					socket.on( 'error', function ( error ) {
 						console.log( error );
+						reject();
 					} );
+
+					socket.on( 'disconnect', function () {
+						disconnected = true;
+						reject( 'disconnected' );
+					} );
+
+				} else {
+					reject( 'master dies' );
 				}
-			} )
+			} );
 		} );
 	},
 	'onComplete' : function () {
 		spec.metrics.endTime = new Date();
-		request( {
-			'method' : 'POST',
-			'url'    : config.apiServer + '/machines/1/test-cases/' + browser.params.templateId,
-			'body'   : {
-				'browserstack' : browser.params.browserStackBody,
-				'spec'         : spec.metrics,
-				'env'          : browser.params.envObj
-			},
-			'json' : true
-		}, function () {
-			socket.emit( 'end-socket', {
-				'testCase' : browser.params.templateId,
-				'name'     : specs.name
+		if ( disconnected ) {
+		} else {
+			request( {
+				'method' : 'POST',
+				'url'    : config.apiServer + '/machines/1/test-cases/' + browser.params.templateId,
+				'body'   : {
+					'browserstack' : browser.params.browserStackBody,
+					'spec'         : spec.metrics,
+					'env'          : browser.params.envObj
+				},
+				'json' : true
+			}, function () {
+				socket.emit( 'end-socket', {
+					'testCase' : browser.params.templateId,
+					'name'     : specs.name
+				} );
+				//console.log( 'Good' );
 			} );
-			//console.log( 'Good' );
-		} );
+		}
 	}
 
 };
