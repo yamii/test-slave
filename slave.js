@@ -80,6 +80,9 @@ Slave.prototype.setListeners = function () {
 	} );
 
 	this.client.on( 'connect', () => {
+
+		// Clean buffers
+		this.testProtocol.remainingBuffers = '';
 		// Reset retry counter
 		this.retry     = 0;
 		this.connected = true;
