@@ -49,8 +49,9 @@ function Slave( options ) {
 	this.options.osVersion      = specs.os_version;
 	this.options.browserVersion = specs.browser_version;
 
-	this.client = net.connect( options );
+	this.client    = net.connect( options );
 	this.setListeners();
+	this.connected = false;
 
 	return this;
 }
@@ -80,16 +81,17 @@ Slave.prototype.setListeners = function () {
 
 	this.client.on( 'connect', () => {
 		// Reset retry counter
-		this.retry = 0;
-
-		let slaveMeta = {
+		this.retry     = 0;
+		this.connected = true;
+		let slaveMeta  = {
 			'platform'       : this.options.os,
 			'id'             : this.id,
 			'name'           : this.options.name,
 			'browser'        : this.options.browser,
 			'osVersion'      : this.options.osVersion,
 			'browserVersion' : this.options.browserVersion
-		}
+		};
+
 		// Introduce self
 		this.write( 'IAM', JSON.stringify( slaveMeta ), ( error, data ) => {
 			console.log( 'IAM ', this.options.name );
@@ -100,6 +102,7 @@ Slave.prototype.setListeners = function () {
 
 	this.client.on( 'close', ( reason ) => {
 		console.log( reason );
+		this.connected = false;
 		this.reconnect();
 	} );
 
@@ -136,7 +139,9 @@ Slave.prototype.write = function () {
 		this.queue.push( cb );
 	}
 
-	this.client.write( this.testProtocol.write.apply( null, args ) );
+	if ( this.connected ) {
+		this.client.write( this.testProtocol.write.apply( null, args ) );
+	}
 };
 
 // Temporary for now
