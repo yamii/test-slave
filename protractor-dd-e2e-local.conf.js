@@ -70,7 +70,7 @@ exports.config = {
 					};
 
 					socket.on( 'connect', function () {
-
+						disconnected = false;
 						socket.emit( 'register-browserstack', {
 							'browserstack' : browser.params.browserStackBody,
 							'session'      : browser.params.session
