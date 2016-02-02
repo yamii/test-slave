@@ -125,6 +125,14 @@ Slave.prototype.reconnect = function () {
 		++this.retry;
 	} else {
 		console.log( 'Slave has given up...' );
+		fs.exists( 'logs/*.log', ( exists ) => {
+			if ( exists ) {
+				fs.unlink( 'logs/*.log', ( err ) => {
+					if ( err ) throw err;
+					console.log( 'successfully deleted logs/logs.log' );
+				} );
+			}
+		} );
 	}
 };
 

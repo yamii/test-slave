@@ -14,8 +14,11 @@ let env      = process.env;
 const config = require( './config' );
 let os       = require( 'os' );
 
-let disconnected = false;
+const fs         = require('fs');
 const specs      = require( './config/specs.json' );
+
+let writeStream;
+let readableStream;
 
 exports.config = {
 	// Framework needed
@@ -69,15 +72,30 @@ exports.config = {
 						}
 					};
 
+					// create log file
+					if ( !writeStream ) {
+						writeStream = fs.createWriteStream( 'test/data/testlogs/' + browser.params.session + '.log' );
+						writeStream.on('error', function (error) {
+							old(error);
+						} );
+					}
+
 					socket.on( 'connect', function () {
-						disconnected = false;
 						socket.emit( 'register-browserstack', {
 							'browserstack' : browser.params.browserStackBody,
 							'session'      : browser.params.session
 						} );
+
+						function writeToStream () {
+							for ( let key in arguments ) {
+								writeStream.write( arguments[key] );
+							}
+						}
+
 						console.log = function () {
-							//Array.prototype.unshift.call(arguments, 'Report: ');
-							// Keep this for debugging purposes
+							if ( writeStream ) {
+								writeToStream.apply( null, arguments );
+							}
 							old.apply( this, arguments );
 							socket.emit( 'browserstack-stream', {
 								'data' : arguments
@@ -87,13 +105,8 @@ exports.config = {
 					} );
 
 					socket.on( 'error', function ( error ) {
-						console.log( error );
+						old( error );
 						reject();
-					} );
-
-					socket.on( 'disconnect', function () {
-						disconnected = true;
-						reject( 'disconnected' );
 					} );
 
 				} else {
@@ -103,27 +116,40 @@ exports.config = {
 		} );
 	},
 	'onComplete' : function () {
+		writeStream.on( 'finish', () => {
+			console.error( 'all writes are now complete.' );
+		} );
+
+		writeStream          = '';
 		spec.metrics.endTime = new Date();
-		if ( disconnected ) {
-		} else {
-			request( {
-				'method' : 'POST',
-				'url'    : config.apiServer + '/machines/1/test-cases/' + browser.params.templateId,
-				'body'   : {
-					'browserstack' : browser.params.browserStackBody,
-					'spec'         : spec.metrics,
-					'env'          : browser.params.envObj
-				},
-				'json' : true
-			}, function () {
-				//console.log( 'Good' );
+
+		request( {
+			'method' : 'POST',
+			'url'    : config.apiServer + '/machines/1/test-cases/' + browser.params.templateId,
+			'body'   : {
+				'browserstack' : browser.params.browserStackBody,
+				'spec'         : spec.metrics,
+				'env'          : browser.params.envObj
+			},
+			'json' : true
+		}, function () {
+			let readableStream = fs.createReadStream( 'test/data/testlogs/' + browser.params.session + '.log' );
+
+			readableStream.on( 'data', function ( chunk ) {
+				socket.emit( 'local-logs-stream', {
+					'data' : chunk
+				} );
 			} );
-		}
+
+			fs.unlink( 'test/data/testlogs/' + browser.params.session + '.log', ( err ) => {
+				if ( err ) throw err;
+				console.log( 'successfully deleted log' );
+			} );
+		} );
 
 		socket.emit( 'end-socket', {
 			'testCase' : browser.params.templateId,
 			'name'     : specs.name
 		} );
-	},
-
+	}
 };
