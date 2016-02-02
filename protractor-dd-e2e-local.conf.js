@@ -116,13 +116,14 @@ exports.config = {
 				},
 				'json' : true
 			}, function () {
-				socket.emit( 'end-socket', {
-					'testCase' : browser.params.templateId,
-					'name'     : specs.name
-				} );
 				//console.log( 'Good' );
 			} );
 		}
-	}
+
+		socket.emit( 'end-socket', {
+			'testCase' : browser.params.templateId,
+			'name'     : specs.name
+		} );
+	},
 
 };
